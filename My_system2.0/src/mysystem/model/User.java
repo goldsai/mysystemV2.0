@@ -1,26 +1,18 @@
 package mysystem.model;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 import java.util.List;
 
-public class User {
-	private long id;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+
+public class User extends BaseModel {
+	// private long id;
 	private String login;
 	private String pass;
 	private List<Right> rights;
-
-	/**
-	 * @return the id
-	 */
-	public long getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(long id) {
-		this.id = id;
-	}
 
 	@Override
 	public String toString() {
@@ -53,6 +45,15 @@ public class User {
 	 */
 	public void setPass(String pass) {
 		this.pass = pass;
+	}
+
+	private static final byte[] salt = { -102, 14, -54, -98, -120, 116, 97, -116, -119, -114, -101, 91, 57, -104, 9,
+			91 };
+
+	public void setPassHesh(String pass) throws NoSuchAlgorithmException, InvalidKeySpecException {
+		SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+		KeySpec spec = new PBEKeySpec(pass.toCharArray(), salt, 65536, 128);
+		this.pass =new String(factory.generateSecret(spec).getEncoded());
 	}
 
 	/**

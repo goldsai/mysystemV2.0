@@ -2,25 +2,11 @@ package mysystem.model;
 
 import java.util.Date;
 
-public class Message {
-	private long id;
+public class Message extends BaseModel {
+//	private long id;
 	private Date createDate;
 	private String txt;
 	private User author;
-
-	/**
-	 * @return the id
-	 */
-	public long getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(long id) {
-		this.id = id;
-	}
 
 	/**
 	 * @return the createDate

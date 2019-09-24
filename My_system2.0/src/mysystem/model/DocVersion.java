@@ -2,26 +2,12 @@ package mysystem.model;
 
 import java.util.Date;
 
-public class DocVersion {
-	private long id;
+public class DocVersion extends BaseModel {
+	// private long id;
 	private Date createDate;
 	private Doc doc;
 	private int labelDocVersion;
 	private Message desc;
-
-	/**
-	 * @return the id
-	 */
-	public long getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(long id) {
-		this.id = id;
-	}
 
 	/**
 	 * @return the createDate

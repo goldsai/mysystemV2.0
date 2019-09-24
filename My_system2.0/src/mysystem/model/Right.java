@@ -1,25 +1,11 @@
 package mysystem.model;
 
-public class Right {
-	private long id;
+public class Right extends BaseModel {
+	// private long id;
 	private String uri;
 	private String shortName;
 	private String longName;
 	private String desc;
-
-	/**
-	 * @return the id
-	 */
-	public long getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(long id) {
-		this.id = id;
-	}
 
 	/**
 	 * @return the uri
@@ -125,7 +111,7 @@ public class Right {
 
 	@Override
 	public String toString() {
-		return "Right [id=" + id+ ", shortName=" + shortName + ", uri=" + uri  +"]";
+		return "Right [id=" + id + ", shortName=" + shortName + ", uri=" + uri + "]";
 	}
 
 	/**

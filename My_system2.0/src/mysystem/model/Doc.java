@@ -1,24 +1,10 @@
 package mysystem.model;
 
-public class Doc {
-	private long id;
+public class Doc extends BaseModel {
+	// private long id;
 	private String name;
 	private TypeDoc type;
 	private DocVersion actualVersion;
-
-	/**
-	 * @return the id
-	 */
-	public long getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(long id) {
-		this.id = id;
-	}
 
 	/**
 	 * @return the name
@@ -98,7 +84,8 @@ public class Doc {
 
 	@Override
 	public String toString() {
-		return "Doc [id=" + id + ", name=" + name + ", type=" + type.getShortName() + ", actualVersion=" + actualVersion.getId() + "]";
+		return "Doc [id=" + id + ", name=" + name + ", type=" + type.getShortName() + ", actualVersion="
+				+ actualVersion.getId() + "]";
 	}
 
 	/**
