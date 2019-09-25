@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.sql.Date;
 
 import mysystem.model.Message;
-import mysystem.model.TypeDoc;
+//import mysystem.model.TypeDoc;
 import mysystem.model.User;
 
 /*
@@ -70,7 +70,7 @@ public class MessageDAO extends BaseDAO<Message> {
 		// "INSERT INTO " + NameDBTableMessage + " (" + NameFieldDateCreate + ", "
 		// + NameFieldTxt + ", " + NameFieldIdUser + ") VALUES (?, ?, ?)";
 		try {
-			preparedStatement.setDate(1, new Date(model.getCreateDate()));
+			preparedStatement.setDate(1, new Date(model.getCreateDate().getTime()));
 			preparedStatement.setString(2, model.getTxt());
 			preparedStatement.setLong(3, model.getAuthor().getId());
 
@@ -87,7 +87,7 @@ public class MessageDAO extends BaseDAO<Message> {
 		// "UPDATE " + NameDBTableMessage + " SET " + NameFieldDateCreate
 		// + " = ?," + NameFieldTxt + " = ?," + NameFieldIdUser + "= ? WHERE id = ?";
 		try {
-			preparedStatement.setDate(1, model.getCreateDate());
+			preparedStatement.setDate(1, new Date(model.getCreateDate().getTime()));
 			preparedStatement.setString(2, model.getTxt());
 			preparedStatement.setLong(3, model.getAuthor().getId());
 
