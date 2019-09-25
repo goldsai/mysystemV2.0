@@ -5,7 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import mysystem.model.TypeDoc;
-import mysystem.model.User;
 
 public class TypeDocDAO extends BaseDAO<TypeDoc> {
 	public TypeDocDAO() {
