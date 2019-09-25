@@ -3,12 +3,33 @@ package mysystem.model;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
 public class User extends BaseModel {
+	/**
+	 * Хранит экземпляры класса.
+	 */
+	private static List<User> storage = new ArrayList<>();
+
+	public static User storageFind(long id) {
+		Optional<User> ins = storage.parallelStream().filter(s -> s.id == id).findAny();
+		return ins.orElse(null);
+	}
+	public static User getInstance(long id, String login, String pass, List<Right> rights) {
+		
+		User user = storageFind(id);
+		if (user == null) {
+			user = new User(id, login, pass, rights);
+			storage.add(user);
+		}
+		return user;
+	}
+
 	// private long id;
 	private String login;
 	private String pass;
@@ -53,7 +74,7 @@ public class User extends BaseModel {
 	public void setPassHesh(String pass) throws NoSuchAlgorithmException, InvalidKeySpecException {
 		SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
 		KeySpec spec = new PBEKeySpec(pass.toCharArray(), salt, 65536, 128);
-		this.pass =new String(factory.generateSecret(spec).getEncoded());
+		this.pass = new String(factory.generateSecret(spec).getEncoded());
 	}
 
 	/**
@@ -102,7 +123,7 @@ public class User extends BaseModel {
 	 * @param login
 	 * @param pass
 	 */
-	public User(long id, String login, String pass) {
+	private User(long id, String login, String pass) {
 		this(login, pass);
 		this.id = id;
 
@@ -112,7 +133,7 @@ public class User extends BaseModel {
 	 * @param login
 	 * @param pass
 	 */
-	public User(String login, String pass) {
+	private User(String login, String pass) {
 		super();
 
 		this.login = login;
@@ -125,7 +146,7 @@ public class User extends BaseModel {
 	 * @param pass
 	 * @param rights
 	 */
-	public User(long id, String login, String pass, List<Right> rights) {
+	private User(long id, String login, String pass, List<Right> rights) {
 		this(id, login, pass);
 		this.rights = rights;
 	}
@@ -135,7 +156,7 @@ public class User extends BaseModel {
 	 * @param pass
 	 * @param rights
 	 */
-	public User(String login, String pass, List<Right> rights) {
+	private User(String login, String pass, List<Right> rights) {
 		this(login, pass);
 		this.rights = rights;
 	}

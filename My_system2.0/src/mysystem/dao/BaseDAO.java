@@ -34,9 +34,9 @@ public abstract class BaseDAO<T extends BaseModel> {
 	 * Инициализирует переменные запросов к базе данных
 	 */
 	protected void initSQLString() {
-		SQL_GET_BY_ID = "SELECT * FROM " + NAME_DB_TABLE + "WHERE "+NameFieldID+"=?";
+		SQL_GET_BY_ID = "SELECT * FROM " + NAME_DB_TABLE + "WHERE " + NameFieldID + "=?";
 		SQL_GET_ALL = "SELECT * FROM " + NAME_DB_TABLE;
-		SQL_DELETE_MODEL = "DELETE FROM " + NAME_DB_TABLE + " WHERE "+NameFieldID+" = ?";
+		SQL_DELETE_MODEL = "DELETE FROM " + NAME_DB_TABLE + " WHERE " + NameFieldID + " = ?";
 	}
 
 	/**
@@ -56,8 +56,9 @@ public abstract class BaseDAO<T extends BaseModel> {
 		SQL_UPDATE_MODEL = sqlUpdateModel;
 		initSQLString();
 	}
-	protected static final String NameFieldID="id";
-	
+
+	protected static final String NameFieldID = "id";
+
 	private String SQL_GET_BY_ID;
 
 	// >>>>>>> "select * from users";

@@ -1,6 +1,24 @@
 package mysystem.model;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 public class Right extends BaseModel {
+	/**
+	 * Хранит экземпляры класса.
+	 */
+	private static List<Right> storage = new ArrayList<>();
+
+	public static Right getInstance(long id, String uri, String shortName, String longName, String desc) {
+		Optional<Right> ins = storage.parallelStream().filter(s -> s.id == id).findAny();
+		Right right = ins.orElse(null);
+		if (right == null) {
+			right = new Right( id,  uri,  shortName,  longName,  desc);
+			storage.add(right);
+		}
+		return right;
+	}
 	// private long id;
 	private String uri;
 	private String shortName;
@@ -120,7 +138,7 @@ public class Right extends BaseModel {
 	 * @param longName
 	 * @param desc
 	 */
-	public Right(String uri, String shortName, String longName, String desc) {
+	private Right(String uri, String shortName, String longName, String desc) {
 		super();
 		this.uri = uri;
 		this.shortName = shortName;
@@ -135,7 +153,7 @@ public class Right extends BaseModel {
 	 * @param longName
 	 * @param desc
 	 */
-	public Right(long id, String uri, String shortName, String longName, String desc) {
+	private Right(long id, String uri, String shortName, String longName, String desc) {
 		this(uri, shortName, longName, desc);
 		this.id = id;
 

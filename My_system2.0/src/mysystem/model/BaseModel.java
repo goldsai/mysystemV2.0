@@ -1,6 +1,7 @@
 package mysystem.model;
 
 public class BaseModel {
+
 	protected long id;
 
 	/**
@@ -16,5 +17,5 @@ public class BaseModel {
 	public void setId(long id) {
 		this.id = id;
 	}
-	
+
 }
