@@ -1,0 +1,23 @@
+@charset "UTF-8";
+.box-center {
+	align-items: center;
+	justify-content: center;
+}
+
+.mdl-layout_contenet{
+	padding: 24px;
+	flex: none;
+}
+
+.demo-layout-transparent{
+	background-color: : #006BE5;
+}
+
+.demo-layout-transparent .mdl-layout_header,
+.demo-layout-transparent .mdl-layout_drawer-button{
+	color: white;
+}
+
+.mdl-grid.center-items {
+	justify-content: center;
+}

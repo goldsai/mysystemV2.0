@@ -139,19 +139,29 @@ public abstract class BaseDAO<T extends BaseModel> {
 
 	public boolean addModel(T model) {
 		logEntering("addModel", model);
+		
+		return addModel( model, true);
+	}
+	public boolean addModel(T model, boolean setId) {
+		logEntering("addModel", new Object[] { model, setId });
 		boolean rowInserted = false;
 		try (Connection connection = getConnection();
 				PreparedStatement preparedStatement = connection.prepareStatement(SQL_ADD_MODEL)) {
 			setDataForAddModel(preparedStatement, model);
 			logp("addModel", "preparedStatement: '" + preparedStatement + "'");
 			rowInserted = preparedStatement.executeUpdate() > 0;
-
+		if (setId) {
+			ResultSet rs = preparedStatement.getGeneratedKeys();
+			if (rs.next()) {
+			  long newId = rs.getLong(1);
+			  model.setId(newId);
+			}
+		}
 		} catch (SQLException e) {
 			printSQLException(e, "addModel");
 		}
 		return rowInserted;
 	}
-
 	protected abstract void setDataForUpdateModel(PreparedStatement preparedStatement, T model);
 
 	public boolean updateModel(T model) {
@@ -171,11 +181,17 @@ public abstract class BaseDAO<T extends BaseModel> {
 
 	public boolean deleteModel(T model) {
 		logEntering("deleteModel", model);
+		
+		return deleteModel(model.getId());
+	}
+	
+	public boolean deleteModel(long id) {
+		logEntering("deleteModel", id);
 		boolean rowDeleted = false;
 		try (Connection connection = getConnection();
 				PreparedStatement preparedStatement = connection.prepareStatement(SQL_DELETE_MODEL)) {
 
-			preparedStatement.setLong(1, model.getId());
+			preparedStatement.setLong(1,id);
 			logp("deleteModel", "preparedStatement: '" + preparedStatement + "'");
 			rowDeleted = preparedStatement.executeUpdate() > 0;
 

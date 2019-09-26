@@ -17,7 +17,7 @@ import mysystem.model.Right;
 /**
  * Servlet implementation class RightServlet
  */
-@WebServlet("/right")
+@WebServlet("/")
 public class RightServlet extends HttpServlet {
 	RightDAO rightDAO;
 
@@ -57,13 +57,13 @@ public class RightServlet extends HttpServlet {
 				insertRight(request, response);
 				break;
 			case "/delete":
-				deleteUser(request, response);
+				deleteRight(request, response);
 				break;
 			case "/edit":
 				showEditForm(request, response);
 				break;
 			case "/update":
-				updateUser(request, response);
+				updateRight(request, response);
 				break;
 			default:
 				listRight(request, response);
@@ -86,9 +86,9 @@ public class RightServlet extends HttpServlet {
 
 	private void listRight(HttpServletRequest request, HttpServletResponse response)
 			throws SQLException, IOException, ServletException {
-		List<Right> listUser = rightDAO.getModelsAll();
-		request.setAttribute("listUser", listUser);
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/views/right-list.jsp");
+		List<Right> listRight = rightDAO.getModelsAll();
+		request.setAttribute("listRight", listRight);
+		RequestDispatcher dispatcher = request.getRequestDispatcher("views/right-list.jsp");
 		dispatcher.forward(request, response);
 	}
 
@@ -108,30 +108,57 @@ public class RightServlet extends HttpServlet {
 
 	}
 
-	private void insertRight(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
-		String name = request.getParameter("name");
-		String email = request.getParameter("email");
-		String country = request.getParameter("country");
-//		Right newUser =  Right.getInstance(id, uri, shortName, longName, desc)(name, email, country);
-//		rightDAO.addModel(model).insertUser(newUser);
-//		response.sendRedirect("list");
+	private void insertRight(HttpServletRequest request, HttpServletResponse response)
+			throws SQLException, IOException {
+		String uri = request.getParameter("uri");
+		String shortName = request.getParameter("shortName");
+		String longName = request.getParameter("longName");
+		String desc = request.getParameter("desc");
+		Right newRight = Right.NewInstance(-1, uri, shortName, longName, desc);
+		rightDAO.addModel(newRight);
+		response.sendRedirect("list");
 	}
 
-	private void updateUser(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
-		int id = Integer.parseInt(request.getParameter("id"));
-		String name = request.getParameter("name");
-		String email = request.getParameter("email");
-		String country = request.getParameter("country");
+	private void updateRight(HttpServletRequest request, HttpServletResponse response)
+			throws SQLException, IOException {
+		long id = Long.parseLong(request.getParameter("id"));
+		String uri = request.getParameter("uri");
+		String shortName = request.getParameter("shortName");
+		String longName = request.getParameter("longName");
+		String desc = request.getParameter("desc");
 
-//		User book = new User(id, name, email, country);
-//		userDAO.updateUser(book);
-//		response.sendRedirect("list");
+		Right right = Right.storageFind(id);
+
+		if (right == null) {
+			// если записи нет в кэше, то проверяю есть ли он
+			if ((right = rightDAO.getByID(id)) == null)
+				// создаю новый экземпляр и инициализирую его состояние
+				right = Right.NewInstance(id, uri, shortName, longName, desc);
+			else {
+				// изменяю данные
+				right.setUri(uri);
+				right.setShortName(shortName);
+				right.setLongName(longName);
+				right.setDesc(desc);
+
+			}
+		}
+		rightDAO.updateModel(right);
+
+		response.sendRedirect("list");
 	}
 
-	private void deleteUser(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
-		int id = Integer.parseInt(request.getParameter("id"));
-//		userDAO.deleteUser(id);
-//		response.sendRedirect("list");
+	private void deleteRight(HttpServletRequest request, HttpServletResponse response)
+			throws SQLException, IOException {
+		long id = Long.parseLong(request.getParameter("id"));
+
+		if (rightDAO.deleteModel(id)) {
+			Right right = Right.storageFind(id);
+			if (right != null)
+				Right.storageDel(right);
+
+		}
+		response.sendRedirect("list");
 
 	}
 }

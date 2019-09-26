@@ -10,15 +10,41 @@ public class Right extends BaseModel {
 	 */
 	private static List<Right> storage = new ArrayList<>();
 
-	public static Right getInstance(long id, String uri, String shortName, String longName, String desc) {
+	public static Right storageFind(long id) {
 		Optional<Right> ins = storage.parallelStream().filter(s -> s.id == id).findAny();
-		Right right = ins.orElse(null);
+		return ins.orElse(null);
+	}
+
+	public static Right storageFindUri(String uri) {
+		Optional<Right> ins = storage.parallelStream().filter(s -> s.uri == uri).findAny();
+		return ins.orElse(null);
+	}
+	
+	public static boolean storageDel(Right right) {
+		
+		return	storage.remove(right);
+		
+	}
+	public static Right getInstance(long id, String uri, String shortName, String longName, String desc) {
+		// Optional<Right> ins = storage.parallelStream().filter(s -> s.id ==
+		// id).findAny();
+		Right right = storageFind(id);
 		if (right == null) {
-			right = new Right( id,  uri,  shortName,  longName,  desc);
+			right = new Right(id, uri, shortName, longName, desc);
 			storage.add(right);
 		}
 		return right;
 	}
+
+	public static Right NewInstance(long id, String uri, String shortName, String longName, String desc) {
+		
+		Right right = new Right(id, uri, shortName, longName, desc);
+		
+		storage.add(right);
+
+		return right;
+	}
+
 	// private long id;
 	private String uri;
 	private String shortName;
