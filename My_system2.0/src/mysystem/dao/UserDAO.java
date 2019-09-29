@@ -1,5 +1,6 @@
 package mysystem.dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,11 +26,24 @@ public class UserDAO extends BaseDAO<User> {
 	private static final String SQL_UPDATE_USER = "UPDATE " + NameDBTableUser + " SET " + NameFieldLogin + " = ?,"
 			+ NameFieldPass + "= ? WHERE id = ?";
 
-	public UserDAO() {
+	private static volatile UserDAO instance;
+	public static UserDAO getInstance() {
+		UserDAO localInstance = instance;
+		if (localInstance == null) {
+			synchronized (UserDAO.class) {
+				localInstance = instance;
+				if (localInstance == null) {
+					instance = localInstance = new UserDAO();
+				}
+			}
+		}
+		return localInstance;
+	}
+	protected UserDAO() {
 		super(NameDBTableUser, SQL_ADD_USER, SQL_UPDATE_USER);
 		// TODO Auto-generated constructor stub
 	}
-
+	
 	@Override
 	protected User getModelByID(ResultSet rs) {
 		// TODO Auto-generated method stub
@@ -54,6 +68,21 @@ public class UserDAO extends BaseDAO<User> {
 		return user;
 	}
 
+	@Override
+	protected void runTransactionsUpdateModel(User model, Connection connection) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	protected void deleteModelDeleteModel(long id, Connection connection) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	protected void runTransactionsAddModel(User model, boolean setId, Connection connection) {
+		// TODO Auto-generated method stub
+		
+	}
 	@Override
 	protected void setDataForAddModel(PreparedStatement preparedStatement, User model) {
 		// TODO Auto-generated method stub

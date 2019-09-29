@@ -22,7 +22,11 @@
 			</h4>
 		</div>
 		<div class="w3-container w3-green w3-center w3-leftbar w3-rightbar">
-			<h2>List of Right</h2>
+			<h2>
+				List of users with the right to "
+				<c:out value="${right.longName}" />
+				"
+			</h2>
 		</div>
 
 
@@ -30,29 +34,13 @@
 
 			<tr>
 				<th>ID</th>
-				<th>URI</th>
-				<th>Short name</th>
-				<th>Long name</th>
-				<th>Description</th>
-				<th>Action</th>
+				<th>Login</th>
+
 			</tr>
-			<c:forEach var="right" items="${listRight}">
+			<c:forEach var="user" items="${listUser}">
 				<tr>
-					<td><c:out value="${right.id}" /></td>
-					<td><c:out value="${right.uri}" /></td>
-					<td><c:out value="${right.shortName}" /></td>
-					<td><c:out value="${right.longName}" /></td>
-					<td><c:out value="${right.desc}" /></td>
-					<td><a
-						class="w3-btn w3-ripple w3-green w3-round-xxlarge w3-border w3-border-white"
-						href="<%=request.getContextPath() %>/right/edit?id=<c:out value='${right.id}' />">Edit</a>
-						&nbsp;&nbsp;&nbsp;&nbsp;<a
-						class="w3-btn w3-ripple w3-green w3-round-xxlarge w3-border w3-border-white"
-						href="<%=request.getContextPath() %>/right/show_user?id=<c:out value='${right.id}' />">Show user</a>
-						&nbsp;&nbsp;&nbsp;&nbsp; <a
-						class="w3-btn w3-ripple w3-red w3-round-xxlarge w3-border w3-border-white"
-						href="<%=request.getContextPath() %>/right/delete?id=<c:out value='${right.id}' />">Delete</a>
-					</td>
+					<td><c:out value="${user.id}" /></td>
+					<td><c:out value="${user.login}" /></td>
 				</tr>
 			</c:forEach>
 		</table>

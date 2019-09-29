@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import mysystem.dao.RightDAO;
 import mysystem.model.Right;
+import mysystem.model.User;
+
 import static mysystem.web.Log.*;
 
 /**
@@ -27,7 +29,7 @@ public class RightServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 		super.init();
 		logOut("RightServlet", "init", "Enter in metod");
-		rightDAO = new RightDAO();
+		rightDAO = RightDAO.getInstance();
 	}
 
 	private static final long serialVersionUID = 1L;
@@ -69,6 +71,9 @@ public class RightServlet extends HttpServlet {
 			case "/update":
 				updateRight(request, response);
 				break;
+			case "/show_user":
+				showUser(request, response);
+				break;
 			default:
 				listRight(request, response);
 				break;
@@ -76,6 +81,19 @@ public class RightServlet extends HttpServlet {
 		} catch (SQLException ex) {
 			throw new ServletException(ex);
 		}
+	}
+
+	private void showUser(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		logOut("RightServlet", "showUser", "Enter in metod");
+		long idRight = Long.parseLong(request.getParameter("id"));
+		Right existingRight = rightDAO.getByID(idRight);
+		List<User> listUser = rightDAO.getUserForRight(idRight);
+		request.setAttribute("listUser", listUser);
+		request.setAttribute("right", existingRight);
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/views/right-user-list.jsp");
+		dispatcher.forward(request, response);
 	}
 
 	/**

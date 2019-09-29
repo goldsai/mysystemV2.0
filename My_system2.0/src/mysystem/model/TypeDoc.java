@@ -1,5 +1,9 @@
 package mysystem.model;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 public class TypeDoc extends BaseModel {
 	//private long id;
 	private String dirPath;
@@ -103,29 +107,57 @@ public class TypeDoc extends BaseModel {
 	public String toString() {
 		return "TypeDoc [id=" + id + ", shortName=" + shortName+ ", dirPath=" + dirPath + "]";
 	}
+	
+	
 	/**
 	 * @param dirPath
 	 * @param shortName
 	 * @param longName
 	 * @param desc
 	 */
-	public TypeDoc(String dirPath, String shortName, String longName, String desc) {
+	private TypeDoc(long id, String dirPath, String shortName, String longName, String desc) {
 		this.dirPath = dirPath;
 		this.shortName = shortName;
 		this.longName = longName;
 		this.desc = desc;
+		this.id=id;
 	}
+
+
 	/**
-	 * @param id
-	 * @param dirPath
-	 * @param shortName
-	 * @param longName
-	 * @param desc
+	 * Хранит экземпляры класса.
 	 */
-	public TypeDoc(long id, String dirPath, String shortName, String longName, String desc) {
-		this(dirPath, shortName,longName,desc);
-		this.id = id;
+	private static List<TypeDoc> storage = new ArrayList<>();
+
+	public static TypeDoc storageFind(long id) {
+		Optional<TypeDoc> ins = storage.parallelStream().filter(s -> s.id == id).findAny();
+		return ins.orElse(null);
+	}
+
+		
+	public static boolean storageDel(TypeDoc typeDoc) {
+		
+		return	storage.remove(typeDoc);
 		
 	}
-	
+	public static TypeDoc getInstance(long id, String dirPath, String shortName, String longName, String desc) {
+		// Optional<Right> ins = storage.parallelStream().filter(s -> s.id ==
+		// id).findAny();
+		TypeDoc typeDoc = storageFind(id);
+		if (typeDoc == null) {
+			typeDoc = new TypeDoc(id, dirPath, shortName, longName, desc);
+			storage.add(typeDoc);
+		}
+		return typeDoc;
+	}
+
+	public static TypeDoc NewInstance(long id, String dirPath, String shortName, String longName, String desc) {
+		
+		TypeDoc typeDoc = new TypeDoc(id, dirPath, shortName, longName, desc);
+		
+		storage.add(typeDoc);
+
+		return typeDoc;
+	}
+
 }

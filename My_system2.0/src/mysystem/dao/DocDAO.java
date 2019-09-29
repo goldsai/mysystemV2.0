@@ -1,5 +1,6 @@
 package mysystem.dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
@@ -16,7 +17,20 @@ import mysystem.model.Doc;
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
  */
 public class DocDAO extends BaseDAO<Doc> {
-	public DocDAO(String nameDBTable, String sqlAddModel, String sqlUpdateModel, UserDAO userDAO) {
+	private static volatile DocDAO instance;
+	public static DocDAO getInstance() {
+		DocDAO localInstance = instance;
+		if (localInstance == null) {
+			synchronized (DocDAO.class) {
+				localInstance = instance;
+				if (localInstance == null) {
+					instance = localInstance = new DocDAO();
+				}
+			}
+		}
+		return localInstance;
+	}
+	protected DocDAO() {
 		super(NameDBTableDoc, SQL_ADD_USER, SQL_UPDATE_USER);
 	}
 	@Override
@@ -44,4 +58,20 @@ public class DocDAO extends BaseDAO<Doc> {
 			+ NameFieldType + ", " + NameFieldActualVersion + ") VALUES (?, ?, ?)";
 	private static final String SQL_UPDATE_USER = "UPDATE " + NameDBTableDoc + " SET " + NameFieldName
 			+ " = ?," + NameFieldType + " = ?," + NameFieldActualVersion + "= ? WHERE id = ?";
+	@Override
+	protected void runTransactionsAddModel(Doc model, boolean setId, Connection connection) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	protected void runTransactionsUpdateModel(Doc model, Connection connection) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	protected void deleteModelDeleteModel(long id, Connection connection) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

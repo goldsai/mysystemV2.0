@@ -3,6 +3,7 @@ package mysystem.dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Connection;
 import java.sql.Date;
 
 import mysystem.model.Message;
@@ -21,7 +22,20 @@ import mysystem.model.User;
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
  */
 public class MessageDAO extends BaseDAO<Message> {
-	public MessageDAO() {
+	private static volatile MessageDAO instance;
+	public static MessageDAO getInstance() {
+		MessageDAO localInstance = instance;
+		if (localInstance == null) {
+			synchronized (MessageDAO.class) {
+				localInstance = instance;
+				if (localInstance == null) {
+					instance = localInstance = new MessageDAO();
+				}
+			}
+		}
+		return localInstance;
+	}
+	protected MessageDAO() {
 		super(NameDBTableMessage, SQL_ADD_USER, SQL_UPDATE_USER);
 		// TODO Auto-generated constructor stub
 	}
@@ -97,4 +111,20 @@ public class MessageDAO extends BaseDAO<Message> {
 			printSQLException(e, "setDataForUpdateModel");
 		}
 	}
+	@Override
+	protected void runTransactionsAddModel(Message model, boolean setId, Connection connection) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	protected void runTransactionsUpdateModel(Message model, Connection connection) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	protected void deleteModelDeleteModel(long id, Connection connection) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

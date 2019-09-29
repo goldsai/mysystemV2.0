@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mysystem.model.Right;
-//import mysystem.model.TypeDoc;
+import mysystem.model.User;
 
 /*
  * CREATE TABLE `rights` (
@@ -34,9 +34,42 @@ CREATE TABLE `rights_user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
  */
 public class RightDAO extends BaseDAO<Right> {
-	public RightDAO() {
+	@Override
+	protected void runTransactionsUpdateModel(Right model, Connection connection) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void deleteModelDeleteModel(long id, Connection connection) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void runTransactionsAddModel(Right model, boolean setId, Connection connection) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private static volatile RightDAO instance;
+
+	protected RightDAO() {
 		super(NameDBTableRight, SQL_ADD_Right, SQL_UPDATE_Right);
 		// TODO Auto-generated constructor stub
+	}
+
+	public static RightDAO getInstance() {
+		RightDAO localInstance = instance;
+		if (localInstance == null) {
+			synchronized (RightDAO.class) {
+				localInstance = instance;
+				if (localInstance == null) {
+					instance = localInstance = new RightDAO();
+				}
+			}
+		}
+		return localInstance;
 	}
 
 	private static final String NameDBTableRight = "rights";
@@ -61,6 +94,31 @@ public class RightDAO extends BaseDAO<Right> {
 			+ NameFieldIdRight + "=" + NameDBTableRight + "." + NameFieldID + " and " + NameDBTableRightsUser + "."
 			+ NameFieldIdUser + "=?";
 
+	private static final String SQL_GET_BY_IDRight = "SELECT " + NameDBTableRight + "." + NameFieldID + ", "
+			+ NameDBTableRight + "." + NameFieldUri + ", " + NameDBTableRight + "." + NameFieldShortName + ", "
+			+ NameDBTableRight + "." + NameFieldLongName + ", " + NameDBTableRight + "." + NameFieldDesc + " FROM "
+			+ NameDBTableRight + ", " + NameDBTableRightsUser + " WHERE " + NameDBTableRightsUser + "."
+			+ NameFieldIdRight + "=" + NameDBTableRight + "." + NameFieldID + " and " + NameDBTableRight + "."
+			+ NameFieldID + "=?";
+	public List<User> getUserForRight(long idRight) {
+		logEntering("getRightForUser");
+		List<User> list = new ArrayList<>();
+		try (Connection connection = getConnection();
+				PreparedStatement preparedStatement = connection.prepareStatement(SQL_GET_BY_IDRight)) {
+
+			preparedStatement.setLong(1, idRight);
+			logp("getRightForUser", "preparedStatement: '" + preparedStatement + "'");
+			ResultSet rs = preparedStatement.executeQuery();
+			UserDAO userDAO=UserDAO.getInstance();
+			
+			while (rs.next())
+				list.add(userDAO.getModelByID(rs));
+
+		} catch (SQLException e) {
+			printSQLException(e, "getRightForUser");
+		}
+		return list;
+	}
 	public List<Right> getRightForUser(long idUser) {
 		logEntering("getRightForUser");
 		List<Right> list = new ArrayList<>();

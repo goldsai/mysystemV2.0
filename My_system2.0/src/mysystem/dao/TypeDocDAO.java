@@ -1,5 +1,6 @@
 package mysystem.dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -7,7 +8,20 @@ import java.sql.SQLException;
 import mysystem.model.TypeDoc;
 
 public class TypeDocDAO extends BaseDAO<TypeDoc> {
-	public TypeDocDAO() {
+	private static volatile TypeDocDAO instance;
+	public static TypeDocDAO getInstance() {
+		TypeDocDAO localInstance = instance;
+		if (localInstance == null) {
+			synchronized (TypeDocDAO.class) {
+				localInstance = instance;
+				if (localInstance == null) {
+					instance = localInstance = new TypeDocDAO();
+				}
+			}
+		}
+		return localInstance;
+	}
+	protected TypeDocDAO() {
 		super(NameDBTableTypeDoc, SQL_ADD_USER, SQL_UPDATE_USER);
 		// TODO Auto-generated constructor stub
 	}
@@ -43,7 +57,7 @@ public class TypeDocDAO extends BaseDAO<TypeDoc> {
 			printSQLException(e, "getModelByID");
 		}
 
-		return new TypeDoc(id,dirPath,shortName,longName,desc);
+		return  TypeDoc.getInstance(id,dirPath,shortName,longName,desc);
 		
 	}
 
@@ -80,6 +94,21 @@ public class TypeDocDAO extends BaseDAO<TypeDoc> {
 			// TODO Auto-generated catch block
 			printSQLException(e, "setDataForUpdateModel");
 		}
+	}
+	@Override
+	protected void runTransactionsAddModel(TypeDoc model, boolean setId, Connection connection) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	protected void runTransactionsUpdateModel(TypeDoc model, Connection connection) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	protected void deleteModelDeleteModel(long id, Connection connection) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
