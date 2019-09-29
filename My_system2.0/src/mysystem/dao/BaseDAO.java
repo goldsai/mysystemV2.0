@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 import mysystem.model.BaseModel;
 
 import static mysystem.DB.DB.*;
-
+import static mysystem.web.Log.*;
 public abstract class BaseDAO<T extends BaseModel> {
 	private static final Logger log = Logger.getLogger(BaseDAO.class.getName());
 	private static final String NAME_LOG_CLS = "BaseDB";
@@ -34,7 +34,7 @@ public abstract class BaseDAO<T extends BaseModel> {
 	 * Инициализирует переменные запросов к базе данных
 	 */
 	protected void initSQLString() {
-		SQL_GET_BY_ID = "SELECT * FROM " + NAME_DB_TABLE + "WHERE " + NameFieldID + "=?";
+		SQL_GET_BY_ID = "SELECT * FROM " + NAME_DB_TABLE + " WHERE " + NameFieldID + "=?";
 		SQL_GET_ALL = "SELECT * FROM " + NAME_DB_TABLE;
 		SQL_DELETE_MODEL = "DELETE FROM " + NAME_DB_TABLE + " WHERE " + NameFieldID + " = ?";
 	}
@@ -76,18 +76,22 @@ public abstract class BaseDAO<T extends BaseModel> {
 
 	protected void logEntering(String sourceMethod) {
 		log.entering(NAME_LOG_CLS, sourceMethod);
+		logOut(NAME_LOG_CLS, sourceMethod, "Enter metod");
 	}
 
 	protected void logEntering(String sourceMethod, Object params) {
 		log.entering(NAME_LOG_CLS, sourceMethod, params);
+		logOut(NAME_LOG_CLS, sourceMethod, "Enter metod");
 	}
 
 	protected void logEntering(String sourceMethod, Object[] params) {
 		log.entering(NAME_LOG_CLS, sourceMethod, params);
+		logOut(NAME_LOG_CLS, sourceMethod, "Enter metod");
 	}
 
 	protected void logp(String sourceMethod, String msg) {
 		log.logp(Level.SEVERE, NAME_LOG_CLS, sourceMethod, msg);
+		logOut(NAME_LOG_CLS, sourceMethod, msg);
 	}
 
 	/**

@@ -6,7 +6,7 @@
 <%@include file="head.jsp" %>
 <body>
 	<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
-		<%@include file="../jsp/menu.jsp" %>
+		<%@include file="menu.jsp" %>
 		
 	</div>
 </body>
