@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import mysystem.model.User;
+import static mysystem.Log.*;
 
 /*
  * CREATE TABLE `users` (
@@ -18,6 +19,11 @@ import mysystem.model.User;
 
  */
 public class UserDAO extends BaseDAO<User> {
+	/**
+	 * Имя класса (с этим именем добавляются записи с лог)
+	 */
+	private static final String NAME_LOG_USER_CLS = "UserDAO";
+
 	private static final String NameDBTableUser = "users";
 	private static final String NameFieldLogin = "login";
 	private static final String NameFieldPass = "Pass";
@@ -27,6 +33,7 @@ public class UserDAO extends BaseDAO<User> {
 			+ NameFieldPass + "= ? WHERE id = ?";
 
 	private static volatile UserDAO instance;
+
 	public static UserDAO getInstance() {
 		UserDAO localInstance = instance;
 		if (localInstance == null) {
@@ -39,15 +46,16 @@ public class UserDAO extends BaseDAO<User> {
 		}
 		return localInstance;
 	}
+
 	protected UserDAO() {
 		super(NameDBTableUser, SQL_ADD_USER, SQL_UPDATE_USER);
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	@Override
 	protected User getModelByID(ResultSet rs) {
 		// TODO Auto-generated method stub
-		logEntering("getModelByID", rs);
+		logEntering(NAME_LOG_USER_CLS, "getModelByID", rs);
 		long id = 0;// = rs.getLong(NameFieldID);
 		String login = "";
 		String pass = "";
@@ -57,7 +65,7 @@ public class UserDAO extends BaseDAO<User> {
 			pass = rs.getString(NameFieldPass);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			printSQLException(e, "getModelByID");
+			printSQLException(NAME_LOG_USER_CLS, e, "getModelByID");
 		}
 		User user = User.storageFind(id);
 		if (user == null) {
@@ -65,38 +73,42 @@ public class UserDAO extends BaseDAO<User> {
 
 			user = User.getInstance(id, login, pass, dao.getRightForUser(id));
 		}
+		logExiting(NAME_LOG_USER_CLS, "getModelByID", user);
 		return user;
 	}
 
 	@Override
 	protected void runTransactionsUpdateModel(User model, Connection connection) {
 		// TODO Auto-generated method stub
-		
+
 	}
+
 	@Override
 	protected void deleteModelDeleteModel(long id, Connection connection) {
 		// TODO Auto-generated method stub
-		
+
 	}
+
 	@Override
 	protected void runTransactionsAddModel(User model, boolean setId, Connection connection) {
 		// TODO Auto-generated method stub
-		
+
 	}
+
 	@Override
 	protected void setDataForAddModel(PreparedStatement preparedStatement, User model) {
 		// TODO Auto-generated method stub
 		// "INSERT INTO " + NameDBTableUser + " (" + NameFieldLogin + ", "
 		// + NameFieldPass + ") VALUES (?, ?)";
-		logEntering("setDataForAddModel", new Object[] { preparedStatement, model });
+		logEntering(NAME_LOG_USER_CLS, "setDataForAddModel", new Object[] { preparedStatement, model });
 		try {
 			preparedStatement.setString(1, model.getLogin());
 			preparedStatement.setString(2, model.getPass());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			printSQLException(e, "setDataForAddModel");
+			printSQLException(NAME_LOG_USER_CLS, e, "setDataForAddModel");
 		}
-
+		logExiting(NAME_LOG_USER_CLS, "setDataForAddModel");
 	}
 
 	@Override
@@ -104,15 +116,16 @@ public class UserDAO extends BaseDAO<User> {
 		// TODO Auto-generated method stub
 //"UPDATE " + NameDBTableUser + " SET " + NameFieldLogin + " = ?,"
 //+ NameFieldPass + "= ? WHERE id = ?";
-		logEntering("setDataForUpdateModel", new Object[] { preparedStatement, model });
+		logEntering(NAME_LOG_USER_CLS, "setDataForUpdateModel", new Object[] { preparedStatement, model });
 		try {
 			preparedStatement.setString(1, model.getLogin());
 			preparedStatement.setString(2, model.getPass());
 			preparedStatement.setLong(3, model.getId());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			printSQLException(e, "setDataForUpdateModel");
+			printSQLException(NAME_LOG_USER_CLS, e, "setDataForUpdateModel");
 		}
+		logExiting(NAME_LOG_USER_CLS, "setDataForUpdateModel");
 	}
 
 }

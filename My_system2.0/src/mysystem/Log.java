@@ -1,10 +1,14 @@
-package mysystem.web;
+package mysystem;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.Enumeration;
-
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.Cookie;
-//import javax.servlet.http.HttpServletMapping;
 import javax.servlet.http.HttpServletRequest;
 
 public class Log {
@@ -123,4 +127,117 @@ public class Log {
 		logOut(cls, metod, String.format("%30s: '%s'", "TrailerFieldsReady", req.isTrailerFieldsReady()));
 		logOut(cls, metod, "=========================================== end ===");
 	}
+
+	/**
+	 * Логгер
+	 */
+	public static final Logger log = Logger.getLogger("mysystem");
+
+	// статический блок инициализации логгера
+	static {
+		log.setLevel(Level.ALL);
+		log.setUseParentHandlers(false);
+		try {
+			Handler handler = new FileHandler("%h/server.log", 2 * 1024 * 1024, 10, true);
+
+			log.addHandler(handler);
+
+		} catch (IOException e) {
+			log.log(Level.SEVERE, "Can't  create log file handler", e);
+		}
+	}
+
+	/**
+	 * Логирует вход в метод param cls- имя класса
+	 * 
+	 * @param sourceMethod - имя метода
+	 */
+	public static void logEntering(String cls, String sourceMethod) {
+		log.entering(cls, sourceMethod);
+		logOut(cls, sourceMethod, "Enter metod");
+	}
+
+	/**
+	 * Логирует вход в метод с одним параметром param cls- имя класса
+	 * 
+	 * @param sourceMethod - имя метода
+	 * @param params       - значение параметра (который передали в метод)
+	 */
+	public static void logEntering(String cls, String sourceMethod, Object params) {
+		log.entering(cls, sourceMethod, params);
+		logOut(cls, sourceMethod, "Enter metod");
+	}
+
+	/**
+	 * Логирует вход в метод с несколькими параметрами param cls- имя класса
+	 * 
+	 * @param sourceMethod - имя метода
+	 * @param params       - массив значений параметров переданных в метод
+	 */
+	public static void logEntering(String cls, String sourceMethod, Object[] params) {
+		log.entering(cls, sourceMethod, params);
+		logOut(cls, sourceMethod, "Enter metod");
+	}
+
+	/**
+	 * Логирует выход из метода
+	 * 
+	 * @param cls-          имя класса
+	 * @param sourceMethod- имя метода
+	 */
+	public static void logExiting(String cls, String sourceMethod) {
+		log.exiting(cls, sourceMethod);
+		logOut(cls, sourceMethod, "Exit metod");
+	}
+
+	/**
+	 * Логирует выход из метода
+	 * 
+	 * @param cls-          имя класса
+	 * @param sourceMethod- имя метода
+	 * @param result-       объект возвращаемый из класса
+	 */
+	public static void logExiting(String cls, String sourceMethod, Object result) {
+		log.exiting(cls, sourceMethod, result);
+		logOut(cls, sourceMethod, "Exit metod (" + result + ")");
+	}
+
+	/**
+	 * Логирует сообщение
+	 * 
+	 * @param sourceMethod - имя метода из которого переданно сообщение для записи в
+	 *                     лог
+	 * @param msg          - сообщение для логирования
+	 */
+	public static void logp(String cls, String sourceMethod, String msg) {
+		log.logp(Level.SEVERE, cls, sourceMethod, msg);
+		logOut(cls, sourceMethod, msg);
+	}
+
+	/**
+	 * Логирует SQL исключения
+	 * 
+	 * @param ex
+	 * @param sourceMethod
+	 */
+	public static void printSQLException(String cls, SQLException ex, String sourceMethod) {
+		StringBuffer buf = new StringBuffer();
+		for (Throwable e : ex) {
+			if (e instanceof SQLException) {
+				e.printStackTrace(System.err);
+				buf.append("SQLState: " + ((SQLException) e).getSQLState() + "\nError Code: "
+						+ ((SQLException) e).getErrorCode() + "\nMessage: " + e.getMessage() + "\n");
+				Throwable t = ex.getCause();
+				while (t != null) {
+
+					buf.append("Cause: " + t + "\n");
+					t = t.getCause();
+				}
+				buf.append("\n");
+			}
+		}
+		log.logp(Level.SEVERE, cls, sourceMethod, buf.toString(), ex);
+		logOut(cls, sourceMethod, buf.toString());
+	}
+
 }

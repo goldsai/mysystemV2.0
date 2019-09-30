@@ -11,7 +11,7 @@ import java.util.List;
 
 import mysystem.model.Right;
 import mysystem.model.User;
-
+import static mysystem.Log.*;
 /*
  * CREATE TABLE `rights` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -34,6 +34,10 @@ CREATE TABLE `rights_user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
  */
 public class RightDAO extends BaseDAO<Right> {
+	/**
+	 * Имя класса (с этим именем добавляются записи с лог)
+	 */
+	private static final String NAME_LOG_RIGHT_CLS = "RightDAO";
 	@Override
 	protected void runTransactionsUpdateModel(Right model, Connection connection) {
 		// TODO Auto-generated method stub
@@ -101,13 +105,13 @@ public class RightDAO extends BaseDAO<Right> {
 			+ NameFieldIdRight + "=" + NameDBTableRight + "." + NameFieldID + " and " + NameDBTableRight + "."
 			+ NameFieldID + "=?";
 	public List<User> getUserForRight(long idRight) {
-		logEntering("getRightForUser");
+		logEntering(NAME_LOG_RIGHT_CLS,"getRightForUser");
 		List<User> list = new ArrayList<>();
 		try (Connection connection = getConnection();
 				PreparedStatement preparedStatement = connection.prepareStatement(SQL_GET_BY_IDRight)) {
 
 			preparedStatement.setLong(1, idRight);
-			logp("getRightForUser", "preparedStatement: '" + preparedStatement + "'");
+			logp(NAME_LOG_RIGHT_CLS,"getRightForUser", "preparedStatement: '" + preparedStatement + "'");
 			ResultSet rs = preparedStatement.executeQuery();
 			UserDAO userDAO=UserDAO.getInstance();
 			
@@ -115,32 +119,34 @@ public class RightDAO extends BaseDAO<Right> {
 				list.add(userDAO.getModelByID(rs));
 
 		} catch (SQLException e) {
-			printSQLException(e, "getRightForUser");
+			printSQLException(NAME_LOG_RIGHT_CLS,e, "getRightForUser");
 		}
+		logExiting(NAME_LOG_RIGHT_CLS,"getRightForUser" , list);
 		return list;
 	}
 	public List<Right> getRightForUser(long idUser) {
-		logEntering("getRightForUser");
+		logEntering(NAME_LOG_RIGHT_CLS,"getRightForUser");
 		List<Right> list = new ArrayList<>();
 		try (Connection connection = getConnection();
 				PreparedStatement preparedStatement = connection.prepareStatement(SQL_GET_BY_IDUser)) {
 
 			preparedStatement.setLong(1, idUser);
-			logp("getRightForUser", "preparedStatement: '" + preparedStatement + "'");
+			logp(NAME_LOG_RIGHT_CLS,"getRightForUser", "preparedStatement: '" + preparedStatement + "'");
 			ResultSet rs = preparedStatement.executeQuery();
 			while (rs.next())
 				list.add(getModelByID(rs));
 
 		} catch (SQLException e) {
-			printSQLException(e, "getRightForUser");
+			printSQLException(NAME_LOG_RIGHT_CLS,e, "getRightForUser");
 		}
+		logExiting(NAME_LOG_RIGHT_CLS,"getRightForUser" , list);
 		return list;
 	}
 
 	@Override
 	protected Right getModelByID(ResultSet rs) {
 		// TODO Auto-generated method stub
-		logEntering("getModelByID", rs);
+		logEntering(NAME_LOG_RIGHT_CLS,"getModelByID", rs);
 		long id = 0;// = rs.getLong(NameFieldID);
 		String shortName = "";
 		String longName = "";
@@ -154,16 +160,17 @@ public class RightDAO extends BaseDAO<Right> {
 			desc = rs.getString(NameFieldDesc);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			printSQLException(e, "getModelByID");
+			printSQLException(NAME_LOG_RIGHT_CLS,e, "getModelByID");
 		}
-
-		return Right.getInstance(id, uri, shortName, longName, desc);
+		Right right=Right.getInstance(id, uri, shortName, longName, desc);
+		logExiting(NAME_LOG_RIGHT_CLS,"getModelByID" , right);
+		return right;
 	}
 
 	@Override
 	protected void setDataForAddModel(PreparedStatement preparedStatement, Right model) {
 		// TODO Auto-generated method stub
-		logEntering("setDataForAddModel", new Object[] { preparedStatement, model });
+		logEntering(NAME_LOG_RIGHT_CLS,"setDataForAddModel", new Object[] { preparedStatement, model });
 		// "INSERT INTO " + NameDBTableRight + " (" + NameFieldUri + ", "
 		// + NameFieldShortName + ", "+NameFieldLongName+ ", "+NameFieldDesc+ ") VALUES
 		// (?, ?, ?, ?)";
@@ -175,14 +182,15 @@ public class RightDAO extends BaseDAO<Right> {
 			preparedStatement.setString(4, model.getDesc());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			printSQLException(e, "setDataForAddModel");
+			printSQLException(NAME_LOG_RIGHT_CLS,e, "setDataForAddModel");
 		}
+		logExiting(NAME_LOG_RIGHT_CLS, "setDataForAddModel");
 	}
 
 	@Override
 	protected void setDataForUpdateModel(PreparedStatement preparedStatement, Right model) {
 		// TODO Auto-generated method stub
-		logEntering("setDataForUpdateModel", new Object[] { preparedStatement, model });
+		logEntering(NAME_LOG_RIGHT_CLS,"setDataForUpdateModel", new Object[] { preparedStatement, model });
 		// "UPDATE " + NameDBTableRight + " SET " + NameFieldUri + " = ?,"
 		// + NameFieldShortName + " = ?,"+NameFieldLongName + " = ?,"+NameFieldDesc+ "=
 		// ? WHERE id = ?";
@@ -194,7 +202,8 @@ public class RightDAO extends BaseDAO<Right> {
 			preparedStatement.setLong(5, model.getId());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			printSQLException(e, "setDataForUpdateModel");
+			printSQLException(NAME_LOG_RIGHT_CLS,e, "setDataForUpdateModel");
 		}
+		logExiting(NAME_LOG_RIGHT_CLS, "setDataForUpdateModel");
 	}
 }

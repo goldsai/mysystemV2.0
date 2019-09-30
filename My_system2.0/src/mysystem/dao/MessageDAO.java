@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.Date;
-
+import static mysystem.Log.*;
 import mysystem.model.Message;
 //import mysystem.model.TypeDoc;
 import mysystem.model.User;
@@ -40,6 +40,11 @@ public class MessageDAO extends BaseDAO<Message> {
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * Имя класса (с этим именем добавляются записи с лог)
+	 */
+	private static final String NAME_LOG_MSG_CLS = "MessageDAO";
+	
 	private static final String NameDBTableMessage = "type_doc";
 	private static final String NameFieldDateCreate = "date_create";
 	private static final String NameFieldTxt = "txt";
@@ -54,7 +59,7 @@ public class MessageDAO extends BaseDAO<Message> {
 	@Override
 	protected Message getModelByID(ResultSet rs) {
 		// TODO Auto-generated method stub
-		logEntering("getModelByID", rs);
+		logEntering(NAME_LOG_MSG_CLS, "getModelByID", rs);
 		long id = 0;// = rs.getLong(NameFieldID);
 		String txt = "";
 		long id_user = 0;
@@ -68,19 +73,20 @@ public class MessageDAO extends BaseDAO<Message> {
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			printSQLException(e, "getModelByID");
+			printSQLException(NAME_LOG_MSG_CLS,e, "getModelByID");
 		}
 
 		User user = userDAO.getByID(id_user);
-
-		return new Message(id, dateCreate, txt, user);
+		Message msg =new Message(id, dateCreate, txt, user);
+		logExiting(NAME_LOG_MSG_CLS,  "getModelByID", msg);
+		return msg;
 
 	}
 
 	@Override
 	protected void setDataForAddModel(PreparedStatement preparedStatement, Message model) {
 		// TODO Auto-generated method stub
-		logEntering("setDataForAddModel", new Object[] { preparedStatement, model });
+		logEntering(NAME_LOG_MSG_CLS,"setDataForAddModel", new Object[] { preparedStatement, model });
 		// "INSERT INTO " + NameDBTableMessage + " (" + NameFieldDateCreate + ", "
 		// + NameFieldTxt + ", " + NameFieldIdUser + ") VALUES (?, ?, ?)";
 		try {
@@ -90,14 +96,15 @@ public class MessageDAO extends BaseDAO<Message> {
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			printSQLException(e, "setDataForAddModel");
+			printSQLException(NAME_LOG_MSG_CLS,e, "setDataForAddModel");
 		}
+		logExiting(NAME_LOG_MSG_CLS, "setDataForAddModel");
 	}
 
 	@Override
 	protected void setDataForUpdateModel(PreparedStatement preparedStatement, Message model) {
 		// TODO Auto-generated method stub
-		logEntering("setDataForUpdateModel", new Object[] { preparedStatement, model });
+		logEntering(NAME_LOG_MSG_CLS,"setDataForUpdateModel", new Object[] { preparedStatement, model });
 		// "UPDATE " + NameDBTableMessage + " SET " + NameFieldDateCreate
 		// + " = ?," + NameFieldTxt + " = ?," + NameFieldIdUser + "= ? WHERE id = ?";
 		try {
@@ -108,8 +115,9 @@ public class MessageDAO extends BaseDAO<Message> {
 			preparedStatement.setLong(4, model.getId());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			printSQLException(e, "setDataForUpdateModel");
+			printSQLException(NAME_LOG_MSG_CLS,e, "setDataForUpdateModel");
 		}
+		logExiting(NAME_LOG_MSG_CLS, "setDataForUpdateModel");
 	}
 	@Override
 	protected void runTransactionsAddModel(Message model, boolean setId, Connection connection) {

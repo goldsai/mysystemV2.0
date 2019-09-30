@@ -12,7 +12,7 @@
 	<script defer src="/js/material.min.js"></script>
 	
 	<style type="text/css">
-	<%@include file="css/styles_1.css" %>
+	<%@include file="../css/styles_1.css" %>
 	</style>
 	
 </head>

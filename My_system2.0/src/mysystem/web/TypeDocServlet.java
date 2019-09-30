@@ -1,14 +1,13 @@
 package mysystem.web;
 
-import static mysystem.web.Log.logOut;
-import static mysystem.web.Log.printInt;
+import static mysystem.Log.logOut;
+import static mysystem.Log.printInt;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;

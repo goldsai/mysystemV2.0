@@ -1,5 +1,7 @@
 package mysystem.web;
 
+import static mysystem.Log.*;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
@@ -14,8 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import mysystem.dao.RightDAO;
 import mysystem.model.Right;
 import mysystem.model.User;
-
-import static mysystem.web.Log.*;
 
 /**
  * Servlet implementation class RightServlet

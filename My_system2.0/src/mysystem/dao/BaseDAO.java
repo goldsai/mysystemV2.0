@@ -2,14 +2,9 @@ package mysystem.dao;
 
 import java.sql.*;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-//import mysystem.DB.DB;
 import mysystem.model.BaseModel;
-
 import static mysystem.DB.DB.*;
-import static mysystem.web.Log.*;
+import static mysystem.Log.*;
 
 /**
  * Это абстрактный, базовый класс в котором заложена реализация базовых CRUD
@@ -19,29 +14,81 @@ import static mysystem.web.Log.*;
  *
  * @param <T> класс модели данных, для которого реализованы CRUD операции
  */
+/**
+ * @author SAI
+ *
+ * @param <T>
+ */
 public abstract class BaseDAO<T extends BaseModel> {
-	private static final Logger log = Logger.getLogger(BaseDAO.class.getName());
-	private static final String NAME_LOG_CLS = "BaseDB";
-	static {
-		log.setLevel(Level.ALL);
-		log.setUseParentHandlers(false);
-//		try {
-//			Handler handler = new FileHandler("%h/server.log", 0, 10);
-//
-//			log.addHandler(handler);
-//		
-//		} catch (IOException e) {
-//			log.log(Level.SEVERE, "Can't  create log file handler", e);
-//		}
-	}
+	// ================================================================
+	// Константы
+	// ================================================================
+
 	/**
-	 * Хранит имя таблицы в базе данных, в которой хранится данные модели <T extends
-	 * BaseModel>
+	 * Имя поля первичного ключа таблицы базы данных
+	 */
+	protected static final String NameFieldID = "id";
+	/**
+	 * Имя класса (с этим именем добавляются записи с лог)
+	 */
+	private static final String NAME_LOG_CLS = "BaseDAO";
+
+	// ================================================================
+	// Переменные класса
+	// ================================================================
+
+	/**
+	 * Имя таблицы БД, с которой работает дынный класс. Записи этой таблицы хранят
+	 * данные класса T extends BaseModel.
 	 */
 	private String NAME_DB_TABLE;
 
 	/**
-	 * Инициализирует переменные запросов к базе данных
+	 * Cтрока SQL запроса - получает запись по первичному ключу. <br>
+	 * Строка вида: <br>
+	 * <code>SELECT * FROM user WHERE id=?</code>
+	 */
+	private String SQL_GET_BY_ID;
+
+	/**
+	 * Строка SQL запроса - получает все записи из таблицы. <br>
+	 * Строка вида: <br>
+	 * <code>SELECT * FROM users</code>
+	 */
+	private String SQL_GET_ALL;
+
+	/**
+	 * Строка SQL запроса - добавляет новую запись в таблицу. <br>
+	 * Строка вида: <br>
+	 * <code>INSERT INTO users (name, email, country) VALUES (?, ?, ?)</code>
+	 */
+	private String SQL_ADD_MODEL;
+
+	/**
+	 * Строка SQL запроса - обновляет запись по первичному ключу. <br>
+	 * Строка вида: <br>
+	 * <code>UPDATE users SET name = ?,email= ?, country =? WHERE id = ?</code>
+	 */
+	private String SQL_UPDATE_MODEL;
+
+	/**
+	 * Строка SQL запроса - удаляет запись по первичному ключу. <br>
+	 * Строка вида: <br>
+	 * <code>DELETE FROM users WHERE id = ?</code>
+	 */
+	private String SQL_DELETE_MODEL;
+
+	// ================================================================
+	// Переменные и методы логирование
+	// ================================================================
+
+	// ================================================================
+	// Создание и инициализация
+	// ================================================================
+
+	/**
+	 * Инициализирует переменные SQL запросов. При необходимости можно
+	 * переопределить в дочернем классе.
 	 */
 	protected void initSQLString() {
 		SQL_GET_BY_ID = "SELECT * FROM " + NAME_DB_TABLE + " WHERE " + NameFieldID + "=?";
@@ -50,6 +97,8 @@ public abstract class BaseDAO<T extends BaseModel> {
 	}
 
 	/**
+	 * Конструктор
+	 * 
 	 * @param nameDBTable    имя таблицы базы данных, в которой сохроняется модель
 	 *                       данных
 	 * @param sqlAddModel    SQL запрос на вставку данных в таблицу базы данных.
@@ -65,85 +114,6 @@ public abstract class BaseDAO<T extends BaseModel> {
 		SQL_ADD_MODEL = sqlAddModel;
 		SQL_UPDATE_MODEL = sqlUpdateModel;
 		initSQLString();
-	}
-
-	/**
-	 * Имя поля первичного ключа таблицы базы данных
-	 */
-	protected static final String NameFieldID = "id";
-
-	/**
-	 * Хранит строку SQL запроса для получения данных по первичному ключу
-	 */
-	private String SQL_GET_BY_ID;
-
-	// >>>>>>> "select * from users";
-	/**
-	 * Хранит строку SQL запроса для получения всех записей хранящихся в таблице
-	 */
-	private String SQL_GET_ALL;
-
-	// !!!!!!!! "INSERT INTO users" + " (name, email, country) VALUES " + " (?, ?,
-	// ?)";
-	/**
-	 * Хранит строку SQL запроса для добавления новой записи в таблицу базы данных
-	 */
-	private String SQL_ADD_MODEL;
-
-	// !!!!!!!! "update users set name = ?,email= ?, country =? where id = ?"
-	/**
-	 * Хранит строку SQL запроса для обновления данных по первичному ключу
-	 */
-	private String SQL_UPDATE_MODEL;
-
-	// >>>>>>>> "delete from users where id = ?"
-	/**
-	 * Хранит строку SQL запроса для удаления данных по первичному ключу
-	 */
-	private String SQL_DELETE_MODEL;
-
-	/**
-	 * Логирует вход в метод
-	 * 
-	 * @param sourceMethod - наименование метода
-	 */
-	protected void logEntering(String sourceMethod) {
-		log.entering(NAME_LOG_CLS, sourceMethod);
-		logOut(NAME_LOG_CLS, sourceMethod, "Enter metod");
-	}
-
-	/**
-	 * Логирует вход в метод с одним параметром
-	 * 
-	 * @param sourceMethod - наименование метода
-	 * @param params       - значение параметра (который передали в метод)
-	 */
-	protected void logEntering(String sourceMethod, Object params) {
-		log.entering(NAME_LOG_CLS, sourceMethod, params);
-		logOut(NAME_LOG_CLS, sourceMethod, "Enter metod");
-	}
-
-	/**
-	 * Логирует вход в метод с нескольькими параметрами
-	 * 
-	 * @param sourceMethod - наименование метода
-	 * @param params       - массив значений параметров переданных в метод
-	 */
-	protected void logEntering(String sourceMethod, Object[] params) {
-		log.entering(NAME_LOG_CLS, sourceMethod, params);
-		logOut(NAME_LOG_CLS, sourceMethod, "Enter metod");
-	}
-
-	/**
-	 * Логирует сообщение
-	 * 
-	 * @param sourceMethod - имя метода из которого переданно сообщение для записи в
-	 *                     лог
-	 * @param msg          - сообщение для логирования
-	 */
-	protected void logp(String sourceMethod, String msg) {
-		log.logp(Level.SEVERE, NAME_LOG_CLS, sourceMethod, msg);
-		logOut(NAME_LOG_CLS, sourceMethod, msg);
 	}
 
 	/**
@@ -167,14 +137,14 @@ public abstract class BaseDAO<T extends BaseModel> {
 	 * @return - Объект класса модели или пустая ссылка (null)
 	 */
 	public T getByID(long id) {
-		logEntering("getByID", id);// логирую вход в метод
+		logEntering(NAME_LOG_CLS, "getByID", id);// логирую вход в метод
 		T model = null;
-		// подключчаюсь к БД
+		// подключаюсь к БД
 		try (Connection connection = getConnection();
 				PreparedStatement preparedStatement = connection.prepareStatement(SQL_GET_BY_ID);) {
 
 			preparedStatement.setLong(1, id);// заполняю SQL запрос недостающими значениями
-			logp("getByID", "preparedStatement: '" + preparedStatement + "'");// логирую SQL запрос
+			logp(NAME_LOG_CLS, "getByID", "preparedStatement: '" + preparedStatement + "'");// логирую SQL запрос
 			ResultSet rs = preparedStatement.executeQuery();// по SQL запросу получаю набор записей
 
 			// если ответ не пустой, то создаю объет класса данных
@@ -182,8 +152,9 @@ public abstract class BaseDAO<T extends BaseModel> {
 				model = getModelByID(rs);
 
 		} catch (SQLException e) {
-			printSQLException(e, "getByID"); // логирую ошибки
+			printSQLException(NAME_LOG_CLS, e, "getByID"); // логирую ошибки
 		}
+		logExiting(NAME_LOG_CLS, "getByID", model);
 		return model;
 	}
 
@@ -193,18 +164,19 @@ public abstract class BaseDAO<T extends BaseModel> {
 	 * @return
 	 */
 	public List<T> getModelsAll() {
-		logEntering("getAll");
+		logEntering(NAME_LOG_CLS, "getAll");
 		List<T> list = new ArrayList<>();
 		try (Connection connection = getConnection();
 				PreparedStatement preparedStatement = connection.prepareStatement(SQL_GET_ALL)) {
-			logp("getAll", "preparedStatement: '" + preparedStatement + "'");
+			logp(NAME_LOG_CLS, "getAll", "preparedStatement: '" + preparedStatement + "'");
 			ResultSet rs = preparedStatement.executeQuery();
 			while (rs.next())
 				list.add(getModelByID(rs));
 
 		} catch (SQLException e) {
-			printSQLException(e, "getAll");
+			printSQLException(NAME_LOG_CLS, e, "getAll");
 		}
+		logExiting(NAME_LOG_CLS, "getAll", list);
 		return list;
 	}
 
@@ -225,9 +197,10 @@ public abstract class BaseDAO<T extends BaseModel> {
 	 * @return Истина при успешном добавлении
 	 */
 	public boolean addModel(T model) {
-		logEntering("addModel", model);
-
-		return addModel(model, true);
+		logEntering(NAME_LOG_CLS, "addModel", model);
+		boolean res = addModel(model, true);
+		logExiting(NAME_LOG_CLS, "addModel", res);
+		return res;
 	}
 
 	/**
@@ -239,15 +212,16 @@ public abstract class BaseDAO<T extends BaseModel> {
 	 * @return Истина при успешном добавлении
 	 */
 	public boolean addModel(T model, boolean setId) {
-		logEntering("addModel", new Object[] { model, setId });
-
-		return addModel(model, setId, false);
+		logEntering(NAME_LOG_CLS, "addModel", new Object[] { model, setId });
+		boolean res = addModel(model, setId, false);
+		logExiting(NAME_LOG_CLS, "addModel", res);
+		return res;
 	}
 
 	protected abstract void runTransactionsAddModel(T model, boolean setId, Connection connection);
 
 	public boolean addModel(T model, boolean setId, boolean transactions) {
-		logEntering("addModel", new Object[] { model, setId, transactions });
+		logEntering(NAME_LOG_CLS, "addModel", new Object[] { model, setId, transactions });
 		boolean rowInserted = false;
 
 		try (Connection connection = getConnection()) {
@@ -256,7 +230,7 @@ public abstract class BaseDAO<T extends BaseModel> {
 
 			try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_ADD_MODEL)) {
 				setDataForAddModel(preparedStatement, model);
-				logp("addModel", "preparedStatement: '" + preparedStatement + "'");
+				logp(NAME_LOG_CLS, "addModel", "preparedStatement: '" + preparedStatement + "'");
 				rowInserted = preparedStatement.executeUpdate() > 0;
 				if (setId) {
 					ResultSet rs = preparedStatement.getGeneratedKeys();
@@ -270,7 +244,7 @@ public abstract class BaseDAO<T extends BaseModel> {
 					connection.commit();
 				}
 			} catch (SQLException e) {
-				printSQLException(e, "addModel");
+				printSQLException(NAME_LOG_CLS, e, "addModel");
 				if (transactions && connection != null)
 					try {
 						connection.rollback();
@@ -279,8 +253,9 @@ public abstract class BaseDAO<T extends BaseModel> {
 					}
 			}
 		} catch (SQLException e) {
-			printSQLException(e, "addModel");
+			printSQLException(NAME_LOG_CLS, e, "addModel");
 		}
+		logExiting(NAME_LOG_CLS, "addModel", rowInserted);
 		return rowInserted;
 	}
 
@@ -300,15 +275,16 @@ public abstract class BaseDAO<T extends BaseModel> {
 	 * @return
 	 */
 	public boolean updateModel(T model) {
-		logEntering("updateModel", model);
-
-		return updateModel(model, false);
+		logEntering(NAME_LOG_CLS, "updateModel", model);
+		boolean res = updateModel(model, false);
+		logExiting(NAME_LOG_CLS, "updateModel", res);
+		return res;
 	}
 
 	protected abstract void runTransactionsUpdateModel(T model, Connection connection);
 
 	public boolean updateModel(T model, boolean transactions) {
-		logEntering("updateModel", new Object[] { model, transactions });
+		logEntering(NAME_LOG_CLS, "updateModel", new Object[] { model, transactions });
 		boolean rowUpdated = false;
 		try (Connection connection = getConnection()) {
 			if (transactions)
@@ -317,14 +293,14 @@ public abstract class BaseDAO<T extends BaseModel> {
 			try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_UPDATE_MODEL)) {
 
 				setDataForUpdateModel(preparedStatement, model);
-				logp("updateModel", "preparedStatement: '" + preparedStatement + "'");
+				logp(NAME_LOG_CLS, "updateModel", "preparedStatement: '" + preparedStatement + "'");
 				rowUpdated = preparedStatement.executeUpdate() > 0;
 				if (transactions) {
 					runTransactionsUpdateModel(model, connection);
 					connection.commit();
 				}
 			} catch (SQLException e) {
-				printSQLException(e, "updateModel");
+				printSQLException(NAME_LOG_CLS, e, "updateModel");
 				if (transactions && connection != null)
 					try {
 						connection.rollback();
@@ -334,8 +310,9 @@ public abstract class BaseDAO<T extends BaseModel> {
 			}
 
 		} catch (SQLException e) {
-			printSQLException(e, "updateModel");
+			printSQLException(NAME_LOG_CLS, e, "updateModel");
 		}
+		logExiting(NAME_LOG_CLS, "updateModel", rowUpdated);
 		return rowUpdated;
 	}
 
@@ -346,9 +323,10 @@ public abstract class BaseDAO<T extends BaseModel> {
 	 * @return Истина при успешнном удалении
 	 */
 	public boolean deleteModel(T model) {
-		logEntering("deleteModel", model);
-
-		return deleteModel(model.getId());
+		logEntering(NAME_LOG_CLS, "deleteModel", model);
+		boolean res = deleteModel(model.getId());
+		logExiting(NAME_LOG_CLS, "deleteModel", res);
+		return res;
 	}
 
 	/**
@@ -358,25 +336,26 @@ public abstract class BaseDAO<T extends BaseModel> {
 	 * @return Истина при успешном удалении
 	 */
 	public boolean deleteModel(long id) {
-		logEntering("deleteModel", id);
+		logEntering(NAME_LOG_CLS, "deleteModel", id);
 		boolean rowDeleted = false;
 		try (Connection connection = getConnection();
 				PreparedStatement preparedStatement = connection.prepareStatement(SQL_DELETE_MODEL)) {
 
 			preparedStatement.setLong(1, id);
-			logp("deleteModel", "preparedStatement: '" + preparedStatement + "'");
+			logp(NAME_LOG_CLS, "deleteModel", "preparedStatement: '" + preparedStatement + "'");
 			rowDeleted = preparedStatement.executeUpdate() > 0;
 
 		} catch (SQLException e) {
-			printSQLException(e, "deleteModel");
+			printSQLException(NAME_LOG_CLS, e, "deleteModel");
 		}
+		logExiting(NAME_LOG_CLS, "deleteModel", rowDeleted);
 		return rowDeleted;
 	}
 
 	protected abstract void deleteModelDeleteModel(long id, Connection connection);
 
 	public boolean deleteModel(long id, boolean transactions) {
-		logEntering("deleteModel", new Object[] { id, transactions });
+		logEntering(NAME_LOG_CLS, "deleteModel", new Object[] { id, transactions });
 		boolean rowDeleted = false;
 		try (Connection connection = getConnection()) {
 			if (transactions)
@@ -385,7 +364,7 @@ public abstract class BaseDAO<T extends BaseModel> {
 			try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_DELETE_MODEL)) {
 
 				preparedStatement.setLong(1, id);
-				logp("deleteModel", "preparedStatement: '" + preparedStatement + "'");
+				logp(NAME_LOG_CLS, "deleteModel", "preparedStatement: '" + preparedStatement + "'");
 				rowDeleted = preparedStatement.executeUpdate() > 0;
 
 				if (transactions) {
@@ -394,7 +373,7 @@ public abstract class BaseDAO<T extends BaseModel> {
 				}
 
 			} catch (SQLException e) {
-				printSQLException(e, "deleteModel");
+				printSQLException(NAME_LOG_CLS, e, "deleteModel");
 				if (transactions && connection != null)
 					try {
 						connection.rollback();
@@ -404,35 +383,10 @@ public abstract class BaseDAO<T extends BaseModel> {
 			}
 
 		} catch (SQLException e) {
-			printSQLException(e, "deleteModel");
+			printSQLException(NAME_LOG_CLS, e, "deleteModel");
 		}
+		logExiting(NAME_LOG_CLS, "deleteModel", rowDeleted);
 		return rowDeleted;
-	}
-
-	/**
-	 * Логирует исключения
-	 * 
-	 * @param ex
-	 * @param sourceMethod
-	 */
-	protected void printSQLException(SQLException ex, String sourceMethod) {
-		StringBuffer buf = new StringBuffer();
-		for (Throwable e : ex) {
-			if (e instanceof SQLException) {
-				e.printStackTrace(System.err);
-				buf.append("SQLState: " + ((SQLException) e).getSQLState() + "\nError Code: "
-						+ ((SQLException) e).getErrorCode() + "\nMessage: " + e.getMessage() + "\n");
-				Throwable t = ex.getCause();
-				while (t != null) {
-
-					buf.append("Cause: " + t + "\n");
-					t = t.getCause();
-				}
-				buf.append("\n");
-			}
-		}
-		log.logp(Level.SEVERE, NAME_LOG_CLS, sourceMethod, buf.toString(), ex);
-
 	}
 
 }
