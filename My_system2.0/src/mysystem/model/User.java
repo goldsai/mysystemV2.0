@@ -20,13 +20,28 @@ public class User extends BaseModel {
 		Optional<User> ins = storage.parallelStream().filter(s -> s.id == id).findAny();
 		return ins.orElse(null);
 	}
+
+	public static boolean storageDel(User user) {
+
+		return storage.remove(user);
+
+	}
+
 	public static User getInstance(long id, String login, String pass, List<Right> rights) {
-		
+
 		User user = storageFind(id);
 		if (user == null) {
 			user = new User(id, login, pass, rights);
 			storage.add(user);
 		}
+		return user;
+	}
+
+	public static User newInstance(long id, String login, String pass, List<Right> rights) {
+
+		User user = new User(id, login, pass, rights);
+		storage.add(user);
+
 		return user;
 	}
 

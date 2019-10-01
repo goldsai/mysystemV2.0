@@ -65,8 +65,11 @@ public class Log {
 			logOut(cls, metod, "Parameter - Not elements. ");
 		while (paramName.hasMoreElements()) {
 			String st = paramName.nextElement();
-
+			String[] val_st=req.getParameterValues(st);
 			logOut(cls, metod, String.format("%4s %25s: '%s'", ">>", "[" + st + "]", req.getParameter(st)));
+			if (val_st!=null && val_st.length>1)
+				for(int i=0;i<val_st.length;i++)
+					logOut(cls, metod, String.format("%7s %22s: '%s'", ">>>>", "[" + st + "]", val_st[i]));
 		}
 
 		Enumeration<String> attrName = req.getAttributeNames();
@@ -139,11 +142,12 @@ public class Log {
 		log.setUseParentHandlers(false);
 		try {
 			Handler handler = new FileHandler("%h/server.log", 2 * 1024 * 1024, 10, true);
-
+			System.out.println("User.home:"+System.getProperty("user.home"));
 			log.addHandler(handler);
 
 		} catch (IOException e) {
 			log.log(Level.SEVERE, "Can't  create log file handler", e);
+			System.out.println("SAI> ERROR log");
 		}
 	}
 
