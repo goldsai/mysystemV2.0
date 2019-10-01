@@ -26,7 +26,7 @@ public class DB {
 		log.entering(NAME_LOG_CLS, "getConnection");
 		Connection conn = null;
 		try {
-			conn = MySQLConnUtils.getMySQLConnection("localhost", "mysystem2_0", "root", "MCnhFyyBr");
+			conn = MySQLConnUtils.getMySQLConnection("localhost", "mysystem2_0", "root", "ArMyTeKMySyStEm");
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			log.throwing(NAME_LOG_CLS, "getConnection", e);
