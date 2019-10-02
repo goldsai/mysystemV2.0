@@ -4,6 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+
+import mysystem.model.Right;
 import mysystem.model.User;
 import static mysystem.Log.*;
 
@@ -69,7 +72,7 @@ public class UserDAO extends BaseDAO<User> {
 		}
 		User user = User.storageFind(id);
 		if (user == null) {
-			RightDAO dao = new RightDAO();
+			RightDAO dao = RightDAO.getInstance();
 
 			user = User.getInstance(id, login, pass, dao.getRightForUser(id));
 		}
@@ -78,21 +81,13 @@ public class UserDAO extends BaseDAO<User> {
 	}
 
 	@Override
-	protected void runTransactionsUpdateModel(User model, Connection connection) {
+	protected void afterAddModel(User model, boolean setId, Connection connection, boolean rowInserted) {
 		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	protected void deleteModelDeleteModel(long id, Connection connection) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	protected void runTransactionsAddModel(User model, boolean setId, Connection connection) {
-		// TODO Auto-generated method stub
-
+		RightDAO dao = RightDAO.getInstance();
+		List<Right> dbRight = dao.getRightForUser(model.getId());//список прав пользователя из БД
+		
+		dao.addNewRightForUser(connection, model.getRights(), dbRight, model.getId());
+		dao.deleteOldRightForUser(connection, model.getRights(), dbRight, model.getId());
 	}
 
 	@Override

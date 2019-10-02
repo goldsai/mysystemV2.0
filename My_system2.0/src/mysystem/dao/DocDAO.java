@@ -58,20 +58,6 @@ public class DocDAO extends BaseDAO<Doc> {
 			+ NameFieldType + ", " + NameFieldActualVersion + ") VALUES (?, ?, ?)";
 	private static final String SQL_UPDATE_USER = "UPDATE " + NameDBTableDoc + " SET " + NameFieldName
 			+ " = ?," + NameFieldType + " = ?," + NameFieldActualVersion + "= ? WHERE id = ?";
-	@Override
-	protected void runTransactionsAddModel(Doc model, boolean setId, Connection connection) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	protected void runTransactionsUpdateModel(Doc model, Connection connection) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	protected void deleteModelDeleteModel(long id, Connection connection) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 
 }

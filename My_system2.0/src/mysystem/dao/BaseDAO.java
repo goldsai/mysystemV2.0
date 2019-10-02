@@ -79,10 +79,6 @@ public abstract class BaseDAO<T extends BaseModel> {
 	private String SQL_DELETE_MODEL;
 
 	// ================================================================
-	// Переменные и методы логирование
-	// ================================================================
-
-	// ================================================================
 	// Создание и инициализация
 	// ================================================================
 
@@ -213,21 +209,12 @@ public abstract class BaseDAO<T extends BaseModel> {
 	 */
 	public boolean addModel(T model, boolean setId) {
 		logEntering(NAME_LOG_CLS, "addModel", new Object[] { model, setId });
-		boolean res = addModel(model, setId, false);
-		logExiting(NAME_LOG_CLS, "addModel", res);
-		return res;
-	}
-
-	protected abstract void runTransactionsAddModel(T model, boolean setId, Connection connection);
-
-	public boolean addModel(T model, boolean setId, boolean transactions) {
-		logEntering(NAME_LOG_CLS, "addModel", new Object[] { model, setId, transactions });
 		boolean rowInserted = false;
 
 		try (Connection connection = getConnection()) {
-			if (transactions)
-				connection.setAutoCommit(false);
-
+			// if (transactions)
+			connection.setAutoCommit(false);
+			beforeAddModel(model, setId, connection);
 			try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_ADD_MODEL)) {
 				setDataForAddModel(preparedStatement, model);
 				logp(NAME_LOG_CLS, "addModel", "preparedStatement: '" + preparedStatement + "'");
@@ -239,13 +226,13 @@ public abstract class BaseDAO<T extends BaseModel> {
 						model.setId(newId);
 					}
 				}
-				if (transactions) {
-					runTransactionsAddModel(model, setId, connection);
-					connection.commit();
-				}
+				// if (transactions) {
+				afterAddModel(model, setId, connection, rowInserted);
+				connection.commit();
+				// }
 			} catch (SQLException e) {
 				printSQLException(NAME_LOG_CLS, e, "addModel");
-				if (transactions && connection != null)
+				if (connection != null)
 					try {
 						connection.rollback();
 					} catch (Exception ee) {
@@ -257,6 +244,32 @@ public abstract class BaseDAO<T extends BaseModel> {
 		}
 		logExiting(NAME_LOG_CLS, "addModel", rowInserted);
 		return rowInserted;
+	}
+
+	/**
+	 * Вызывается в методе addModel после добавления модели в БД
+	 * 
+	 * @param model       - объект модели
+	 * @param setId       - признак обновления первичного ключа из БД
+	 * @param connection  - конектор к БД. Транзакция открыта.
+	 * @param rowInserted - признак успешного добавления модели в БД
+	 */
+	protected void afterAddModel(T model, boolean setId, Connection connection, boolean rowInserted) {
+		// TODO Auto-generated method stub
+
+	}
+
+	/**
+	 * Вызывается в методе addModel, до добавления модели
+	 * 
+	 * @param model      - объект модели добавляемой в БД
+	 * @param setId      - признак обновления первичного ключа. Если true -
+	 *                   model.id=ключь из БД
+	 * @param connection - конектор к БД. Транзакция открыта.
+	 */
+	protected void beforeAddModel(T model, boolean setId, Connection connection) {
+		// TODO Auto-generated method stub
+
 	}
 
 	/**
@@ -272,36 +285,29 @@ public abstract class BaseDAO<T extends BaseModel> {
 	 * Обновляет данные в таблице
 	 * 
 	 * @param model - объект для обновления данных
-	 * @return
+	 * @return true в стлучае успешного обновления
 	 */
 	public boolean updateModel(T model) {
 		logEntering(NAME_LOG_CLS, "updateModel", model);
-		boolean res = updateModel(model, false);
-		logExiting(NAME_LOG_CLS, "updateModel", res);
-		return res;
-	}
-
-	protected abstract void runTransactionsUpdateModel(T model, Connection connection);
-
-	public boolean updateModel(T model, boolean transactions) {
-		logEntering(NAME_LOG_CLS, "updateModel", new Object[] { model, transactions });
 		boolean rowUpdated = false;
 		try (Connection connection = getConnection()) {
-			if (transactions)
-				connection.setAutoCommit(false);
-
+			connection.setAutoCommit(false);
+			
+			beforeUpdateModel(model, connection);
+			
 			try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_UPDATE_MODEL)) {
 
 				setDataForUpdateModel(preparedStatement, model);
 				logp(NAME_LOG_CLS, "updateModel", "preparedStatement: '" + preparedStatement + "'");
 				rowUpdated = preparedStatement.executeUpdate() > 0;
-				if (transactions) {
-					runTransactionsUpdateModel(model, connection);
-					connection.commit();
-				}
+
+				afterUpdateModel(model, connection, rowUpdated);
+				
+				connection.commit();
+
 			} catch (SQLException e) {
 				printSQLException(NAME_LOG_CLS, e, "updateModel");
-				if (transactions && connection != null)
+				if (connection != null)
 					try {
 						connection.rollback();
 					} catch (Exception ee) {
@@ -315,6 +321,28 @@ public abstract class BaseDAO<T extends BaseModel> {
 		logExiting(NAME_LOG_CLS, "updateModel", rowUpdated);
 		return rowUpdated;
 	}
+
+	/**
+	 * Вызывается в методе updateModel после обновления данных.
+	 * @param model - объет модели
+	 * @param connection - конектор к БД. Транзакция открыта.
+	 * @param rowUpdated - признак успешного обновления.
+	 */
+	protected void afterUpdateModel(T model, Connection connection, boolean rowUpdated) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/**
+	 * Вызывается в методе updateModel до обновления данных.
+	 * @param model - объект модели
+	 * @param connection - конектор к БД. Транзация открыта.
+	 */
+	protected void beforeUpdateModel(T model, Connection connection) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 	/**
 	 * Удаляет модель из таблицы
@@ -338,28 +366,10 @@ public abstract class BaseDAO<T extends BaseModel> {
 	public boolean deleteModel(long id) {
 		logEntering(NAME_LOG_CLS, "deleteModel", id);
 		boolean rowDeleted = false;
-		try (Connection connection = getConnection();
-				PreparedStatement preparedStatement = connection.prepareStatement(SQL_DELETE_MODEL)) {
-
-			preparedStatement.setLong(1, id);
-			logp(NAME_LOG_CLS, "deleteModel", "preparedStatement: '" + preparedStatement + "'");
-			rowDeleted = preparedStatement.executeUpdate() > 0;
-
-		} catch (SQLException e) {
-			printSQLException(NAME_LOG_CLS, e, "deleteModel");
-		}
-		logExiting(NAME_LOG_CLS, "deleteModel", rowDeleted);
-		return rowDeleted;
-	}
-
-	protected abstract void deleteModelDeleteModel(long id, Connection connection);
-
-	public boolean deleteModel(long id, boolean transactions) {
-		logEntering(NAME_LOG_CLS, "deleteModel", new Object[] { id, transactions });
-		boolean rowDeleted = false;
 		try (Connection connection = getConnection()) {
-			if (transactions)
-				connection.setAutoCommit(false);
+			connection.setAutoCommit(false);
+
+			beforeDeleteModel(id, connection);
 
 			try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_DELETE_MODEL)) {
 
@@ -367,14 +377,12 @@ public abstract class BaseDAO<T extends BaseModel> {
 				logp(NAME_LOG_CLS, "deleteModel", "preparedStatement: '" + preparedStatement + "'");
 				rowDeleted = preparedStatement.executeUpdate() > 0;
 
-				if (transactions) {
-					deleteModelDeleteModel(id, connection);
-					connection.commit();
-				}
+				afterDeleteModel(id, connection, rowDeleted);
+				connection.commit();
 
 			} catch (SQLException e) {
 				printSQLException(NAME_LOG_CLS, e, "deleteModel");
-				if (transactions && connection != null)
+				if (connection != null)
 					try {
 						connection.rollback();
 					} catch (Exception ee) {
@@ -387,6 +395,29 @@ public abstract class BaseDAO<T extends BaseModel> {
 		}
 		logExiting(NAME_LOG_CLS, "deleteModel", rowDeleted);
 		return rowDeleted;
+	}
+
+	/**
+	 * Вызывается из метода deleteModel после удаления из БД
+	 * 
+	 * @param id         первичный ключ удаленной записи
+	 * @param connection - конектор к БД. Транзакция открыта.
+	 * @param rowDeleted - признак успешного удаления записи
+	 */
+	protected void afterDeleteModel(long id, Connection connection, boolean rowDeleted) {
+		// TODO Auto-generated method stub
+
+	}
+
+	/**
+	 * Вызывается в методе deleteModel, до удаления из БД
+	 * 
+	 * @param id         - первичный ключ для удаления данных
+	 * @param connection - конектор к БД
+	 */
+	protected void beforeDeleteModel(long id, Connection connection) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

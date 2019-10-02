@@ -119,20 +119,5 @@ public class MessageDAO extends BaseDAO<Message> {
 		}
 		logExiting(NAME_LOG_MSG_CLS, "setDataForUpdateModel");
 	}
-	@Override
-	protected void runTransactionsAddModel(Message model, boolean setId, Connection connection) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	protected void runTransactionsUpdateModel(Message model, Connection connection) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	protected void deleteModelDeleteModel(long id, Connection connection) {
-		// TODO Auto-generated method stub
-		
-	}
-
+	
 }

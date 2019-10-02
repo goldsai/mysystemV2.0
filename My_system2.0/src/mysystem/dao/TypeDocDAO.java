@@ -102,20 +102,6 @@ public class TypeDocDAO extends BaseDAO<TypeDoc> {
 		}
 		logExiting(NAME_LOG_TYPEDOC_CLS, "setDataForUpdateModel");
 	}
-	@Override
-	protected void runTransactionsAddModel(TypeDoc model, boolean setId, Connection connection) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	protected void runTransactionsUpdateModel(TypeDoc model, Connection connection) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	protected void deleteModelDeleteModel(long id, Connection connection) {
-		// TODO Auto-generated method stub
-		
-	}
+
 
 }
