@@ -208,7 +208,7 @@ public class Log {
 
 	/**
 	 * Логирует сообщение
-	 * 
+	 * @param cls - имя класса
 	 * @param sourceMethod - имя метода из которого переданно сообщение для записи в
 	 *                     лог
 	 * @param msg          - сообщение для логирования
@@ -217,7 +217,17 @@ public class Log {
 		log.logp(Level.SEVERE, cls, sourceMethod, msg);
 		logOut(cls, sourceMethod, msg);
 	}
-
+	
+	/**
+	 * Логирует исключение
+	 * @param cls -имя класса
+	 * @param sourceMethod - имя метода
+	 * @param e - исключение
+	 */
+	public static void logThrowing(String cls, String sourceMethod, Throwable e) {
+		log.throwing(cls, sourceMethod, e);
+		logOut(cls,sourceMethod,e.toString());
+	}
 	/**
 	 * Логирует SQL исключения
 	 * 
